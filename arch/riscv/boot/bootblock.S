@@ -1,7 +1,7 @@
 #include <asm/biosdef.h>
 #include <csr.h>
 
-// os size location (os_size could be sectors [p1-task3] or bytes [p1-task4])
+// os size location 
 .equ os_size_loc, 0x502001fc
 
 // kernel address (move kernel to here, and jmp here to start kernel)
@@ -14,12 +14,11 @@
 .global main
 
 main:
-	// fence on all memory and I/O
 	fence
 
 	bnez a0, secondary
 
-	// TODO: [p1-task1] call BIOS to print string "It's bootblock!"
+// call BIOS to print string "It's bootblock!"
 	li a0,	BIOS_PUTSTR
 	la a1,	msg
 	li a2,	0
@@ -38,10 +37,9 @@ main:
 	ble 	s2,		s4,		remain // 若block数< 64, 则直接进入remain处理逻辑
 
 sd_read:
-	// TODO: [p1-task2] call BIOS to read kernel in SD card
 	li 		a0, 	BIOS_SDREAD		//调用名
 	add 	a1, 	s1, zero
-	add 	s1, 	s1, s5 		// 递增地址
+	add 	s1, 	s1, s5 			// 递增地址
 	add 	a2,		s4, zero		
 	sub 	s2, 	s2, s4 			// 每次放入64, 并减去64
 	add 	a3, 	s3, zero
@@ -60,12 +58,12 @@ remain:
 	li		a5,		0
 	call bios_func_entry
 
-	// TODO: [p1-task2] jump to kernel to start UCAS-OS
+// jump to kernel to start UCAS-OS
 	la	a1,	kernel
 	jr 		a1
 
 secondary:
-	/* TODO [P3-task3]: 
+	/* 
 	 * 1. Mask all interrupts
 	 * 2. let stvec pointer to kernel_main
 	 * 3. enable software interrupt for ipi

@@ -5,36 +5,30 @@
 
 #include <asm.h>
 #include <csr.h>
-/*
-#define MASTER_KERNEL_STACK		0x50500000
-#define SLAVE_KERNEL_STACK		0x50501000
-*/
+
 /*.section ".entry_function","ax"*/
 ENTRY(_start)
   /* Mask all interrupts */
   csrw CSR_SIE, zero
   csrw CSR_SIP, zero
 
-  /* 清除FS位，写入SUM位 */
+  /* 写入SUM位 */
   li t0, SR_SUM
   csrs CSR_SSTATUS, t0
 
-  /* TODO: [p1-task2] clear BSS for flat non-ELF images */
   call get_current_cpu_id
-
   bnez a0, slave_core
 
 master_core:
   la t0,__bss_start
   la t1,__BSS_END__
+  
 loop_clear_BSS:
   beq   t0, t1, setup_kernel_C_stack
   sw    zero,(t0)
   addi  t0, t0, 4
   j     loop_clear_BSS
 
-
-  /* TODO: [p1-task2] setup C environment */
 setup_kernel_C_stack:
   la tp, pid0_pcb_master
   ld sp, pid0_stack_master

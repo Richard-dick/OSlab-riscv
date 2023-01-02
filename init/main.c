@@ -37,12 +37,12 @@
 #include <os/string.h>
 #include <os/mm.h>
 #include <os/smp.h>
-#include <os/net.h>
+// #include <os/net.h>
 #include <os/time.h>
 #include <os/ioremap.h>
 #include <sys/syscall.h>
 #include <screen.h>
-#include <e1000.h>
+// #include <e1000.h>
 #include <printk.h>
 #include <assert.h>
 #include <type.h>
@@ -92,7 +92,7 @@ static void init_jmptab(void)
 
 static void init_task_info(void)
 {
-    // TODO: [p1-task4] Init 'tasks' array via reading app-info sector
+    // TODO: Init 'tasks' array via reading app-info sector
     // NOTE: You need to get some related arguments from bootblock first
     void* rd_addr = (void*)TASK_NUM_LOC;
     // 开始读入image中appinfo的地址
@@ -222,8 +222,8 @@ static void init_syscall(void)
     }
     // initialize special syscall:
     syscall[SYSCALL_EXEC]           = (long (*)())do_exec;              //0
-    syscall[SYSCALL_SLEEP]          = (long (*)())do_sleep;             //2
     syscall[SYSCALL_EXIT]           = (long (*)())do_exit;              //1
+    syscall[SYSCALL_SLEEP]          = (long (*)())do_sleep;             //2
     syscall[SYSCALL_KILL]           = (long (*)())do_kill;              //3
     syscall[SYSCALL_WAITPID]        = (long (*)())do_waitpid;           //4
     syscall[SYSCALL_PS]             = (long (*)())do_process_show;      //5
@@ -257,8 +257,8 @@ static void init_syscall(void)
     syscall[SYSCALL_MBOX_RECV]      = (long (*)())do_mbox_recv;         //55
     syscall[SYSCALL_SHM_GET]        = (long (*)())shm_page_get;         //56
     syscall[SYSCALL_SHM_DT]         = (long (*)())shm_page_dt;          //57
-    syscall[SYSCALL_NET_SEND]       = (long (*)())do_net_send;          //63
-    syscall[SYSCALL_NET_RECV]       = (long (*)())do_net_recv;          //64
+    // syscall[SYSCALL_NET_SEND]       = (long (*)())do_net_send;          //63
+    // syscall[SYSCALL_NET_RECV]       = (long (*)())do_net_recv;          //64
     syscall[SYSCALL_FS_MKFS]        = (long (*)())do_mkfs;              // 65
     syscall[SYSCALL_FS_STATFS]      = (long (*)())do_statfs;            // 66
     syscall[SYSCALL_FS_CD]          = (long (*)())do_cd;                // 67
@@ -305,16 +305,16 @@ int main(void)
         // Read CPU frequency (｡•ᴗ-)_
         time_base = bios_read_fdt(TIMEBASE);
 
-        // Read Flatten Device Tree (｡•ᴗ-)_
-        e1000 = (volatile uint8_t *)bios_read_fdt(EHTERNET_ADDR);
-        uint64_t plic_addr = bios_read_fdt(PLIC_ADDR);
-        uint32_t nr_irqs = (uint32_t)bios_read_fdt(NR_IRQS);
-        printk("> [INIT] e1000: 0x%lx, plic_addr: 0x%lx, nr_irqs: 0x%lx.\n", e1000, plic_addr, nr_irqs);
+        // // Read Flatten Device Tree (｡•ᴗ-)_
+        // e1000 = (volatile uint8_t *)bios_read_fdt(EHTERNET_ADDR);
+        // uint64_t plic_addr = bios_read_fdt(PLIC_ADDR);
+        // uint32_t nr_irqs = (uint32_t)bios_read_fdt(NR_IRQS);
+        // printk("> [INIT] e1000: 0x%lx, plic_addr: 0x%lx, nr_irqs: 0x%lx.\n", e1000, plic_addr, nr_irqs);
 
-        // IOremap
-        plic_addr = (uintptr_t)ioremap((uint64_t)plic_addr, 0x4000 * NORMAL_PAGE_SIZE);
-        e1000 = (uint8_t *)ioremap((uint64_t)e1000, 8 * NORMAL_PAGE_SIZE);
-        printk("> [INIT] IOremap initialization succeeded.\n");
+        // // IOremap
+        // plic_addr = (uintptr_t)ioremap((uint64_t)plic_addr, 0x4000 * NORMAL_PAGE_SIZE);
+        // e1000 = (uint8_t *)ioremap((uint64_t)e1000, 8 * NORMAL_PAGE_SIZE);
+        // printk("> [INIT] IOremap initialization succeeded.\n");
 
         // Init Process Control Blocks |•'-'•) ✧
         init_pcb();
@@ -328,13 +328,13 @@ int main(void)
         init_exception();
         printk("> [INIT] Interrupt processing initialization succeeded.\n");
 
-        // TODO: [p5-task4] Init plic
-        plic_init(plic_addr, nr_irqs);
-        printk("> [INIT] PLIC initialized successfully. addr = 0x%lx, nr_irqs=0x%x\n", plic_addr, nr_irqs);
+        // // TODO: [p5-task4] Init plic
+        // plic_init(plic_addr, nr_irqs);
+        // printk("> [INIT] PLIC initialized successfully. addr = 0x%lx, nr_irqs=0x%x\n", plic_addr, nr_irqs);
 
         // Init network device
-        e1000_init();
-        printk("> [INIT] E1000 device initialized successfully.\n");
+        // e1000_init();
+        // printk("> [INIT] E1000 device initialized successfully.\n");
 
         // Init system call table (0_0)
         init_syscall();

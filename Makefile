@@ -2,7 +2,7 @@
 # Project Information
 # -----------------------------------------------------------------------
 
-PROJECT_IDX	= 6
+# bonus now
 
 # -----------------------------------------------------------------------
 # Host Linux Variables
@@ -11,7 +11,7 @@ PROJECT_IDX	= 6
 SHELL       = /bin/sh
 DISK        = /dev/sdb
 TTYUSB1     = /dev/ttyUSB1
-DIR_OSLAB   = $(HOME)/OSLab-RISC-V
+DIR_OSLAB   = $(HOME)/OS/OSLab-RISC-V
 DIR_QEMU    = $(DIR_OSLAB)/qemu
 DIR_UBOOT   = $(DIR_OSLAB)/u-boot
 
@@ -68,7 +68,7 @@ DIR_KERNEL      = ./kernel
 DIR_LIBS        = ./libs
 DIR_TINYLIBC    = ./tiny_libc
 DIR_TEST        = ./test
-DIR_TEST_PROJ   = $(DIR_TEST)/test_project$(PROJECT_IDX)
+DIR_TEST_PROJ   = $(DIR_TEST)/test_bonus
 
 BOOTLOADER_ENTRYPOINT   = 0x50200000
 KERNEL_ENTRYPOINT       = 0xffffffc050202000
@@ -208,6 +208,6 @@ $(ELF_CREATEIMAGE): $(SRC_CREATEIMAGE)
 
 image: $(ELF_CREATEIMAGE) $(ELF_BOOT) $(ELF_MAIN) $(ELF_USER)
 	cd $(DIR_BUILD) && ./$(<F) --extended $(filter-out $(<F), $(^F))
-	# dd if=/dev/zero of=$(DIR_BUILD)/image oflag=append conv=notrunc bs=576MB count=1
+	dd if=/dev/zero of=$(DIR_BUILD)/image oflag=append conv=notrunc bs=300MB count=1
 
 .PHONY: image

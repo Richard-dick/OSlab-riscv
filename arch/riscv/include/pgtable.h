@@ -78,32 +78,27 @@ typedef uint64_t PTE;
 /* Translation between physical addr and kernel virtual addr */
 static inline uintptr_t kva2pa(uintptr_t kva)
 {
-    /* TODO: [P4-task1] */
     return kva - KVA_OFFSET;
 }
 
 static inline uintptr_t pa2kva(uintptr_t pa)
 {
-    /* TODO: [P4-task1] */
     return pa + KVA_OFFSET;
 }
 
 /* get physical page addr from PTE 'entry' */
 static inline uint64_t get_pa(PTE entry)
 {
-    /* TODO: [P4-task1] */
     return ((entry & PA_MASK) >> _PAGE_PFN_SHIFT) << NORMAL_PAGE_SHIFT;
 }
 
 /* Get/Set page frame number of the `entry` */
 static inline long get_pfn(PTE entry)
 {
-    /* TODO: [P4-task1] */
     return (entry & PA_MASK) >> _PAGE_PFN_SHIFT;
 }
 static inline void set_pfn(PTE *entry, uint64_t pfn)
 {
-    /* TODO: [P4-task1] */
     // 处理低十位的页表项，目前是全保留
     // ! 全保留的暂时，不过里面应该都是0
     *entry = (pfn << _PAGE_PFN_SHIFT) | ((*entry) & 0x3ff);
@@ -112,24 +107,20 @@ static inline void set_pfn(PTE *entry, uint64_t pfn)
 /* Get/Set attribute(s) of the `entry` */
 static inline long get_attribute(PTE entry, uint64_t mask)
 {
-    /* TODO: [P4-task1] */
     return entry & mask;
 }
 static inline void set_attribute(PTE *entry, uint64_t bits)
 {
-    /* TODO: [P4-task1] */
     (*entry) |= bits;
 }
 
 static inline void clean_attribute(PTE *entry, uint64_t bits)
 {
-    /* TODO: [P4-task1] */
     (*entry) ^= bits;
 }
 
 static inline void clear_pgdir(uintptr_t pgdir_addr)
 {
-    /* TODO: [P4-task1] */
     // memset((char *)pgdir_addr, 0, NORMAL_PAGE_SIZE);
         int i;
     for(i = 0; i < NORMAL_PAGE_SIZE; i += 8){

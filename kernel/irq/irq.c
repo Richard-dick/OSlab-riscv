@@ -71,7 +71,7 @@ void init_exception()
     /* NOTE: handle_int, handle_other, etc.*/
     for (int i = 0; i != IRQC_COUNT; ++i)
         irq_table[i] = handle_irq_timer;
-    irq_table[IRQC_S_EXT] = handle_irq_ext;
+    // irq_table[IRQC_S_EXT] = handle_irq_ext;
     /* TODO: [p2-task3] set up the entrypoint of exceptions */
     setup_exception();
 }

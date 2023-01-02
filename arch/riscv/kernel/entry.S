@@ -3,10 +3,8 @@
 #include <asm/regs.h>
 
 .macro SAVE_CONTEXT
-  /* TODO: [p2-task3] save all general purpose registers here! */
-  /* HINT: Pay attention to the function of tp and sp, and save them carefully! */
-  
   /* 切换栈 user-->kernel_context */
+  /* 保留32个寄存器 */
   sd      sp, PCB_USER_SP(tp)
   ld      sp, PCB_KERNEL_SP(tp)
   addi    sp, sp, SWITCH_TO_SIZE
@@ -53,7 +51,7 @@
    * space.
    */
 
-  /* TODO: [p2-task3] save sstatus, sepc, stval and scause on kernel stack */
+  /* save sstatus, sepc, stval and scause on kernel stack */
   csrr    t0, CSR_SSTATUS
   csrr    t1, CSR_SEPC
   csrr    t2, CSR_STVAL
@@ -67,15 +65,11 @@
   li t0, SR_SUM | SR_FS
   csrw CSR_SSTATUS, t0
 
-  /*ld sp, PCB_KERNEL_SP(tp)*/
   addi sp, sp, -(SWITCH_TO_SIZE)
 
 .endm
 
 .macro RESTORE_CONTEXT
-  /* TODO: Restore all general purpose registers and sepc, sstatus */
-  /* HINT: Pay attention to sp again! */
-
   /*切换栈，running_stack(abolished)--> kernel_context*/
   ld   sp, PCB_KERNEL_SP(tp)
   addi sp, sp, SWITCH_TO_SIZE
@@ -146,9 +140,6 @@ ENDPROC(disable_interrupt)
 // NOTE: the address of previous pcb in a0
 // NOTE: the address of next pcb in a1
 ENTRY(switch_to)
-  /* TODO: [p2-task1] save all callee save registers on kernel stack,
-   * see the definition of `struct switchto_context` in sched.h*/
-  
   ld t0,  PCB_KERNEL_SP(a0)
   sd sp,  SWITCH_TO_SP(t0)
   sd ra,  SWITCH_TO_RA(t0)
@@ -165,8 +156,6 @@ ENTRY(switch_to)
   sd s10, SWITCH_TO_S10(t0)
   sd s11, SWITCH_TO_S11(t0)
 
-  /* TODO: [p2-task1] restore all callee save registers from kernel stack,
-   * see the definition of `struct switchto_context` in sched.h*/
   /*接下来进入a1，nextpcb，调整tp*/
   add tp, a1, zero
 
@@ -188,13 +177,9 @@ ENTRY(switch_to)
   
   /* 接下来转成用户栈进行操作，ra内本来就是ret——exception */
   jr ra
-
-  //sret
 ENDPROC(switch_to)
 
 ENTRY(ret_from_exception)
-  /* TODO: [p2-task3] restore context via provided macro and return to sepc */
-  /* HINT: remember to check your sp, does it point to the right address? */
   /* RESTORE里处理了栈的问题，全部都回来了 */
   call unlock_kernel
   RESTORE_CONTEXT
@@ -202,20 +187,10 @@ ENTRY(ret_from_exception)
 ENDPROC(ret_from_exception)
 
 ENTRY(exception_handler_entry)
-  /*.local __first_ecall*/
-  /* 感觉应该一进来就锁内核......为什么不是一进来就锁内核，哦还没进到kernel */
+
   SAVE_CONTEXT
   call lock_kernel
-
-  /* TODO: [p2-task3] save context via the provided macro */
-
-  /* TODO: [p2-task3] load ret_from_exception into $ra so that we can return to
-   * ret_from_exception when interrupt_help complete.
-   */
-
-  /* TODO: [p2-task3] call interrupt_helper
-   * NOTE: don't forget to pass parameters for it.
-   */
+  
   ld   a0, PCB_KERNEL_SP(tp)
   addi a0, a0, SWITCH_TO_SIZE
   /*addi a0, a0, OFFSET_SIZE  传入上下文，而不是栈指针，tmd就是传入栈指针!! */
